@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ping pong ball</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="container">
+      <div id="score">You: 0|| ai: 0</div>
+      <div id="maingame">
+        <canvas id="pingpong"></canvas>
+        <button id="start-btn">Start Game</button>
+      </div>
+      <p>Use W and S to move player 1 and UP/Down arrow for player 2</p>
+    </div>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>

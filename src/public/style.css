@@ -1,0 +1,49 @@
+body {
+  align-items: center;
+  background-color: black;
+  color: whitesmoke;
+  justify-content: center;
+  margin: 0;
+
+  text-align: center;
+}
+#start-btn {
+  text-align: center;
+  background-color: rgba(54, 187, 63, 0.534);
+  color: darkviolet;
+  font-size: medium;
+  width: 100;
+  height: 55px;
+  border-radius: 10%;
+  transition-duration: 0.4s;
+}
+#start-btn:hover {
+  background-color: aqua;
+  color: bisque;
+}
+#start-btn:active {
+  background-color: violet;
+  color: brown;
+}
+h1 {
+  text-align: center;
+}
+
+#maingame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#pingpong {
+  border: solid 2px rgb(227, 218, 218);
+  margin: 20px;
+  display: block;
+  width: 1000px;
+  align-items: center;
+  align-self: center;
+}
+#container {
+  align-items: center;
+  text-align: center;
+  font-size: larger;
+}

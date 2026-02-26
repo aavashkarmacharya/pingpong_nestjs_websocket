@@ -35,10 +35,13 @@ h1 {
   justify-content: center;
 }
 #pingpong {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
   border: solid 2px rgb(227, 218, 218);
   margin: 20px;
   display: block;
   width: 1000px;
+  height: 500px;
   align-items: center;
   align-self: center;
 }

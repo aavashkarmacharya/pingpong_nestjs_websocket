@@ -19,14 +19,24 @@ socket.on('gamestate', (event) => {
   ball.x = event.ball.x;
   ball.y = event.ball.y;
 });
+
 //drawing stuff
 const pingpong = document.getElementById('pingpong');
 const ctx = pingpong.getContext('2d');
+const dpr = window.devicePixelRatio || 1;
+const canvas = {
+  displaywidth: 600,
+  displayheight: 300,
+};
+pingpong.style.width = 600 + 'px';
+pingpong.style.height = 300 + 'px';
+pingpong.width = canvas.displaywidth * dpr;
+pingpong.height = canvas.displayheight * dpr;
 
 const ball = {
   x: pingpong.width / 2 + 1,
-  y: pingpong.height / 2,
-  radius: 7,
+  y: pingpong.height / 2 - 10,
+  radius: 15,
   speedX: 5,
   speedY: 8,
   color: '#dde8e3',
@@ -34,19 +44,23 @@ const ball = {
 
 const player1 = {
   x: 5,
-  y: pingpong.height / 2 - 25,
+  y: pingpong.height / 2 - 50,
   width: 10,
-  height: 50,
+  height: 90,
   color: '#e9e3e3c4',
 };
 
 const player2 = {
   x: pingpong.width - 15,
-  y: pingpong.height / 2 - 25,
+  y: pingpong.height / 2 - 50,
   width: 10,
-  height: 50,
+  height: 90,
   color: '#e9e3e3c4',
 };
+function setscore(player1score, player2score) {
+  const score = document.getElementById('score');
+  score.innerHTML = `Player1: ${player1score}|| player2: ${player2score}`;
+}
 
 function makeRect(x, y, width, height, color) {
   ctx.fillStyle = color;
@@ -112,12 +126,12 @@ function setupKeyEvents(socket) {
     if (key === 'arrowup') {
       keys.player2up = false;
       console.log('Stop moving player: 2');
-      socket.emit('paddleMove', { player: 1, direction: 'stop' });
+      socket.emit('paddleMove', { player: 2, direction: 'stop' });
     }
     if (key === 's') {
       keys.player1down = false;
       console.log('stop moving player: 1');
-      socket.emit('paddleMove', { player: 2, direction: 'stop' });
+      socket.emit('paddleMove', { player: 1, direction: 'stop' });
     }
     if (key === 'arrowdown') {
       keys.player2down = false;
@@ -139,4 +153,5 @@ function gameLoop() {
   draw();
   requestAnimationFrame(gameLoop);
 }
+const gamestarter = document.getElementById('start-btn');
 gameLoop();

@@ -21,23 +21,23 @@ export class websocketgateway
     player1: {
       x: 5,
       y: 100,
-      width: 10,
+      width: 15,
       height: 90,
       speed: 0,
     },
     player2: {
-      x: 600 - 5,
-      y: 100,
-      width: 10,
+      x: 595,
+      y: 150,
+      width: 15,
       height: 90,
       speed: 0,
     },
     ball: {
       x: 300,
-      y: 100,
+      y: 150,
       radius: 12,
-      speedX: 3,
-      speedY: 2,
+      speedX: 5,
+      speedY: 5,
     },
     score: {
       player1: 0,
@@ -55,14 +55,45 @@ export class websocketgateway
   handleDisconnect(client: Socket) {
     console.log(`Player has disconnected! ${client.id}`);
   }
+  newgamestarter() {
+    console.log('starting new game!');
+    this.gamestate.score.player1 = 0;
+    this.gamestate.score.player2 = 0;
+    this.gamestate.player1.y = 100;
+    this.gamestate.player2.y = 150;
+    this.gameloopstarter();
+    this.server.emit('gamestate', this.gamestate);
+    console.log('new game started!');
+  }
+  gameloopstopper() {
+    if (this.gameLoopInterval) {
+      clearInterval(this.gameLoopInterval);
+      console.log('game stopped');
+    }
+  }
+  wincondition(player: number) {
+    console.log(`player ${player} has won the game!`);
+    this.gameloopstopper();
+    this.server.emit('winnerfound', {
+      winner: player,
+      finalscore: {
+        player1: this.gamestate.score.player1,
+        player2: this.gamestate.score.player2,
+      },
+    });
+    setTimeout(() => {
+      this.newgamestarter();
+    }, 5000);
+  }
   gameloopstarter() {
     console.log('game loop started!');
     this.gameLoopInterval = setInterval(() => {
       this.ballmovement();
       this.checkforcollison();
       this.server.emit('gamestate', this.gamestate);
-    });
+    }, 1000 / 120);
   }
+
   @SubscribeMessage('paddleMove')
   handlePaddle(client: Socket, data: { player: number; direction: string }) {
     const player = data.player;
@@ -89,7 +120,6 @@ export class websocketgateway
       if (direction === 'stop') {
         this.gamestate.player2.speed = 0;
       }
-
       this.gamestate.player2.y += this.gamestate.player2.speed;
     }
     if (this.gamestate.player1.y < 0) {
@@ -98,11 +128,11 @@ export class websocketgateway
     if (this.gamestate.player2.y < 0) {
       this.gamestate.player2.y = 0;
     }
-    if (this.gamestate.player1.y > 380 - this.gamestate.player1.height) {
-      this.gamestate.player1.y = 380 - this.gamestate.player1.height;
+    if (this.gamestate.player1.y > 300 - this.gamestate.player1.height) {
+      this.gamestate.player1.y = 300 - this.gamestate.player1.height;
     }
-    if (this.gamestate.player2.y > 380 - this.gamestate.player2.height) {
-      this.gamestate.player2.y = 380 - this.gamestate.player2.height;
+    if (this.gamestate.player2.y > 290 - this.gamestate.player2.height) {
+      this.gamestate.player2.y = 290 - this.gamestate.player2.height;
     }
     if (direction != 'stop') {
       console.log(`Player ${player} has moved ${direction}!`);
@@ -119,8 +149,8 @@ export class websocketgateway
       ball.y = ball.radius;
       ball.speedY = -ball.speedY;
     }
-    if (ball.y + ball.radius > 370) {
-      ball.y = 370 - ball.radius;
+    if (ball.y + ball.radius > 300) {
+      ball.y = 300 - ball.radius;
       if (ball.speedY === 0) {
         ball.speedY = 2;
       } else {
@@ -143,9 +173,9 @@ export class websocketgateway
   }
   resetball() {
     const ball = this.gamestate.ball;
-    ball.x = 337;
-    ball.y = 115;
-    ball.speedX = (Math.random() > 0.5 ? 1 : -1) * 2;
+    ball.x = 300;
+    ball.y = 150;
+    ball.speedX = (Math.random() > 0.5 ? 1 : -1) * 3;
     ball.speedY = Math.random() * 4 - 2;
     console.log('ball position reset');
   }
@@ -162,18 +192,24 @@ export class websocketgateway
     if (this.collisondetection(ball, player2)) {
       console.log('player 2 had hit the ball!');
       ball.speedX = -Math.abs(ball.speedX);
-      ball.x = player2.x - ball.radius;
+      ball.x = player2.x - player2.width - ball.radius;
       this.spinball(ball, player2);
     }
     if (ball.x - ball.radius < 0) {
       console.log('player 2 has scored!! ball went outside from left');
+      this.gamestate.score.player2 += 1;
+      this.resetball();
+    }
+    if (ball.x + ball.radius > 600) {
+      console.log('player 1 has scored! ball went outside form right');
       this.gamestate.score.player1 += 1;
       this.resetball();
     }
-    if (ball.x - ball.radius > 600) {
-      console.log('player 1 has scored! ball went outside form right');
-      this.gamestate.score.player2 += 1;
-      this.resetball();
+    if (this.gamestate.score.player1 >= 5) {
+      this.wincondition(1);
+    }
+    if (this.gamestate.score.player2 >= 5) {
+      this.wincondition(2);
     }
   }
 }

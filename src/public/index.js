@@ -18,8 +18,9 @@ socket.on('gamestate', (event) => {
   player2.y = event.player2.y;
   ball.x = event.ball.x;
   ball.y = event.ball.y;
-});
 
+  setscore(event.score);
+});
 //drawing stuff
 const pingpong = document.getElementById('pingpong');
 const ctx = pingpong.getContext('2d');
@@ -32,11 +33,11 @@ pingpong.style.width = 600 + 'px';
 pingpong.style.height = 300 + 'px';
 pingpong.width = canvas.displaywidth * dpr;
 pingpong.height = canvas.displayheight * dpr;
-
+ctx.scale(dpr, dpr);
 const ball = {
-  x: pingpong.width / 2 + 1,
-  y: pingpong.height / 2 - 10,
-  radius: 15,
+  x: canvas.displaywidth / 2 + 1,
+  y: canvas.displayheight / 2 - 10,
+  radius: 14,
   speedX: 5,
   speedY: 8,
   color: '#dde8e3',
@@ -44,22 +45,22 @@ const ball = {
 
 const player1 = {
   x: 5,
-  y: pingpong.height / 2 - 50,
+  y: canvas.displayheight / 2,
   width: 10,
-  height: 90,
+  height: 100,
   color: '#e9e3e3c4',
 };
 
 const player2 = {
-  x: pingpong.width - 15,
-  y: pingpong.height / 2 - 50,
+  x: canvas.displaywidth - 15,
+  y: canvas.displayheight / 2,
   width: 10,
-  height: 90,
+  height: 100,
   color: '#e9e3e3c4',
 };
-function setscore(player1score, player2score) {
+function setscore(scoredata) {
   const score = document.getElementById('score');
-  score.innerHTML = `Player1: ${player1score}|| player2: ${player2score}`;
+  score.innerHTML = `Player1: ${scoredata.player1}|| player2: ${scoredata.player2}`;
 }
 
 function makeRect(x, y, width, height, color) {
@@ -68,7 +69,7 @@ function makeRect(x, y, width, height, color) {
 }
 function createLine() {
   ((ctx.fillStyle = '#ede6e6c0'),
-    ctx.fillRect(pingpong.width / 2, 0, 2, pingpong.height));
+    ctx.fillRect(canvas.displaywidth / 2, 0, 2, pingpong.height));
 }
 function makeCircle(x, y, radius, color) {
   ctx.fillStyle = color;
@@ -77,12 +78,6 @@ function makeCircle(x, y, radius, color) {
   ctx.fill();
 }
 
-keys = {
-  player1up: false,
-  player1down: false,
-  player2up: false,
-  player2down: false,
-};
 //key events registration
 function setupKeyEvents(socket) {
   const keys = {
@@ -136,13 +131,13 @@ function setupKeyEvents(socket) {
     if (key === 'arrowdown') {
       keys.player2down = false;
       console.log('stop moving player: 2');
-      socket.emit('paddleMove', { player: 2, direction: stop });
+      socket.emit('paddleMove', { player: 2, direction: 'stop' });
     }
   });
 }
 function draw() {
   ctx.fillStyle = '#4848cc';
-  ctx.fillRect(0, 0, pingpong.width, pingpong.height);
+  ctx.fillRect(0, 0, canvas.displaywidth, canvas.displayheight);
   ctx.beginPath();
   createLine();
   makeRect(player1.x, player1.y, player1.width, player1.height, player1.color);

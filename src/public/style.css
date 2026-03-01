@@ -7,7 +7,7 @@ body {
 
   text-align: center;
 }
-#start-btn {
+#reset-btn {
   text-align: center;
   background-color: rgba(54, 187, 63, 0.534);
   color: darkviolet;
@@ -18,11 +18,11 @@ body {
   transition-duration: 0.4s;
 }
 
-#start-btn:hover {
+#reset-btn:hover {
   background-color: aqua;
   color: bisque;
 }
-#start-btn:active {
+#reset-btn:active {
   background-color: violet;
   color: brown;
 }

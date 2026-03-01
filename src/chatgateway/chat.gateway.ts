@@ -55,13 +55,15 @@ export class websocketgateway
   handleDisconnect(client: Socket) {
     console.log(`Player has disconnected! ${client.id}`);
   }
-  newgamestarter() {
+  resetgame() {
     console.log('starting new game!');
     this.gamestate.score.player1 = 0;
     this.gamestate.score.player2 = 0;
     this.gamestate.player1.y = 100;
     this.gamestate.player2.y = 150;
-    this.gameloopstarter();
+    setTimeout(() => {
+      this.gameloopstarter();
+    }, 2000);
     this.server.emit('gamestate', this.gamestate);
     console.log('new game started!');
   }
@@ -82,7 +84,7 @@ export class websocketgateway
       },
     });
     setTimeout(() => {
-      this.newgamestarter();
+      this.resetgame();
     }, 5000);
   }
   gameloopstarter() {
@@ -91,9 +93,13 @@ export class websocketgateway
       this.ballmovement();
       this.checkforcollison();
       this.server.emit('gamestate', this.gamestate);
-    }, 1000 / 120);
+    }, 1000 / 60);
   }
-
+  @SubscribeMessage('resetgame')
+  Handlereset() {
+    console.log('game resetting!!!');
+    this.resetgame();
+  }
   @SubscribeMessage('paddleMove')
   handlePaddle(client: Socket, data: { player: number; direction: string }) {
     const player = data.player;
@@ -175,7 +181,7 @@ export class websocketgateway
     const ball = this.gamestate.ball;
     ball.x = 300;
     ball.y = 150;
-    ball.speedX = (Math.random() > 0.5 ? 1 : -1) * 3;
+    ball.speedX = (Math.random() > 0.5 ? 1 : -1) * 5;
     ball.speedY = Math.random() * 4 - 2;
     console.log('ball position reset');
   }

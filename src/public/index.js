@@ -21,6 +21,9 @@ socket.on('gamestate', (event) => {
 
   setscore(event.score);
 });
+socket.on('winnerfound', (data) => {
+  window.alert(`player ${data.winner} has won!!`);
+});
 //drawing stuff
 const pingpong = document.getElementById('pingpong');
 const ctx = pingpong.getContext('2d');
@@ -58,6 +61,7 @@ const player2 = {
   height: 100,
   color: '#e9e3e3c4',
 };
+
 function setscore(scoredata) {
   const score = document.getElementById('score');
   score.innerHTML = `Player1: ${scoredata.player1}|| player2: ${scoredata.player2}`;
@@ -109,7 +113,6 @@ function setupKeyEvents(socket) {
       console.log('moving down player: 2');
       socket.emit('paddleMove', { player: 2, direction: 'down' });
     }
-    w;
   });
   document.addEventListener('keyup', (event) => {
     const key = event.key.toLowerCase();
@@ -135,6 +138,7 @@ function setupKeyEvents(socket) {
     }
   });
 }
+
 function draw() {
   ctx.fillStyle = '#4848cc';
   ctx.fillRect(0, 0, canvas.displaywidth, canvas.displayheight);
@@ -148,5 +152,4 @@ function gameLoop() {
   draw();
   requestAnimationFrame(gameLoop);
 }
-const gamestarter = document.getElementById('start-btn');
 gameLoop();

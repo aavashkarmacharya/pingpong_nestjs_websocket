@@ -5,6 +5,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { emit } from 'node:cluster';
 import { Socket, Server } from 'socket.io';
 
 @WebSocketGateway({
@@ -44,16 +45,18 @@ export class websocketgateway
       player2: 0,
     },
   };
-  private gameLoopInterval: NodeJS.Timeout;
+  private gameLoopInterval: NodeJS.Timeout | null = null;
   movementspeed: number = 10;
   handleConnection(client: Socket) {
     console.log(`Player has joined! ${client.id}`);
     if (!this.gameLoopInterval) {
       this.gameloopstarter();
+      this.resetgame();
     }
   }
   handleDisconnect(client: Socket) {
     console.log(`Player has disconnected! ${client.id}`);
+    this.gameloopstopper();
   }
   resetgame() {
     console.log('starting new game!');
@@ -67,9 +70,11 @@ export class websocketgateway
     this.server.emit('gamestate', this.gamestate);
     console.log('new game started!');
   }
+
   gameloopstopper() {
     if (this.gameLoopInterval) {
       clearInterval(this.gameLoopInterval);
+      this.gameLoopInterval = null;
       console.log('game stopped');
     }
   }
@@ -88,6 +93,9 @@ export class websocketgateway
     }, 5000);
   }
   gameloopstarter() {
+    if (this.gameLoopInterval) {
+      return;
+    }
     console.log('game loop started!');
     this.gameLoopInterval = setInterval(() => {
       this.ballmovement();
@@ -98,7 +106,15 @@ export class websocketgateway
   @SubscribeMessage('resetgame')
   Handlereset() {
     console.log('game resetting!!!');
-    this.resetgame();
+    this.gameloopstopper();
+    this.resetball();
+    this.gamestate.score.player1 = 0;
+    this.gamestate.score.player2 = 0;
+    this.gamestate.player1.y = 100;
+    this.gamestate.player2.y = 150;
+
+    this.gameloopstarter();
+    this.server.emit('gamestate', this.gamestate);
   }
   @SubscribeMessage('paddleMove')
   handlePaddle(client: Socket, data: { player: number; direction: string }) {

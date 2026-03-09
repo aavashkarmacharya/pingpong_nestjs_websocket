@@ -81,7 +81,11 @@ function makeCircle(x, y, radius, color) {
   ctx.arc(x, y, radius, 0, Math.PI * 2);
   ctx.fill();
 }
-
+//reset button
+const resetbtn = document.getElementById('reset-btn');
+resetbtn.onclick = () => {
+  socket.emit('resetgame');
+};
 //key events registration
 function setupKeyEvents(socket) {
   const keys = {
@@ -138,7 +142,6 @@ function setupKeyEvents(socket) {
     }
   });
 }
-
 function draw() {
   ctx.fillStyle = '#4848cc';
   ctx.fillRect(0, 0, canvas.displaywidth, canvas.displayheight);

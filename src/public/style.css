@@ -9,22 +9,24 @@ body {
 }
 #reset-btn {
   text-align: center;
-  background-color: rgba(54, 187, 63, 0.534);
-  color: darkviolet;
+  background-color: rgba(92, 101, 205, 0.534);
+  color: rgb(210, 192, 217);
   font-size: medium;
   width: 100;
   height: 55px;
-  border-radius: 10%;
+  border: none;
+  border-radius: 13%;
   transition-duration: 0.4s;
 }
 
 #reset-btn:hover {
-  background-color: aqua;
+  background-color: rgb(74, 98, 195);
   color: bisque;
+  font-size: 18px;
 }
 #reset-btn:active {
-  background-color: violet;
-  color: brown;
+  background-color: rgba(112, 112, 209, 0.753);
+  color: rgba(206, 186, 186, 0.834);
 }
 h1 {
   text-align: center;
